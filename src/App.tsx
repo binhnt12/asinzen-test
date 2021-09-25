@@ -1,32 +1,26 @@
-import { Select } from "antd";
-import SearchBar from "./SeachTree";
+import TreeSelect from "./TreeSelect/TreeSelect";
+import SearchAndResult from "./SearchAndResult/SearchAndResult";
 
 import "./App.css";
-
-const { Option } = Select;
+import Searchable from "./SearchAndResult/Searchable";
+import SearchTreeTest from "./SearchAndResult/SearchTreeTest";
+import { GData } from "./@type";
+import { useState } from "react";
 
 function App() {
-  const handleChange = (value: string) => {
-    console.log(`selected ${value}`);
+  const [_gData, setGData] = useState<GData[]>([]);
+  const handleDataList = (value: GData[]) => {
+    setGData(value);
   };
 
   return (
     <div className="App">
       <h1>Copy Data to Folder</h1>
-      <Select
-        defaultValue="lucy"
-        style={{ width: 420 }}
-        onChange={handleChange}
-      >
-        <Option value="jack">Jack</Option>
-        <Option value="lucy">Lucy</Option>
-        <Option value="disabled" disabled>
-          Disabled
-        </Option>
-        <Option value="Yiminghe">yiminghe</Option>
-      </Select>
+      <TreeSelect gData={_gData} />
       <div className="container">
-        <SearchBar />
+        <SearchAndResult handleDataList={handleDataList} />
+        {/* <Searchable /> */}
+        {/* <SearchTreeTest /> */}
         <a href="/#" className="add-new-folder">
           Add New Folder
         </a>
