@@ -10,7 +10,7 @@
   margin-top: 24px;
   border: 2px solid #bfbfbf;
   padding: 24px;
-  display: inline-flex;
+  display: flex;
   justify-content: space-between;
 }
 
