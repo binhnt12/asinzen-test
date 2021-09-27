@@ -6,17 +6,33 @@
   max-width: 1000px;
 }
 
-.container {
-  margin-top: 24px;
-  border: 2px solid #bfbfbf;
-  padding: 24px;
-  display: flex;
-  justify-content: space-between;
-}
-
 .add-new-folder {
   margin-left: 24px;
   color: blue;
   padding: 8px;
   max-height: 36px;
+}
+
+.App .action {
+  float: right;
+  margin-top: 16px;
+}
+
+.App .action > button {
+  margin-left: 16px;
+}
+
+.icon-folder-filled {
+  font-size: 36px;
+}
+
+.ant-tree-switcher {
+  align-self: center;
+}
+
+.ant-tree-switcher .ant-tree-switcher-icon,
+.ant-tree-switcher .ant-select-tree-switcher-icon,
+.anticon.anticon-caret-right {
+  font-size: 16px !important;
+  min-width: 28px;
 }

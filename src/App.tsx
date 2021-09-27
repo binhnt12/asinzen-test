@@ -2,28 +2,35 @@ import TreeSelect from "./TreeSelect/TreeSelect";
 import SearchAndResult from "./SearchAndResult/SearchAndResult";
 
 import "./App.css";
-import Searchable from "./SearchAndResult/Searchable";
-import SearchTreeTest from "./SearchAndResult/SearchTreeTest";
-import { GData } from "./@type";
+import { TreeData } from "./type";
 import { useState } from "react";
+import { Button } from "antd";
 
 function App() {
-  const [_gData, setGData] = useState<GData[]>([]);
-  const handleDataList = (value: GData[]) => {
-    setGData(value);
+  const [treeData, setTreeData] = useState<TreeData[]>([]);
+  const [selectedNode, setSelectedNode] = useState<string>("");
+
+  const handleDataList = (value: TreeData[]) => {
+    setTreeData(value);
+  };
+
+  const handleNodeSelect = (value: string) => {
+    setSelectedNode(value);
   };
 
   return (
     <div className="App">
       <h1>Copy Data to Folder</h1>
-      <TreeSelect gData={_gData} />
+      <TreeSelect treeData={treeData} handleNodeSelect={handleNodeSelect} />
       <div className="container">
-        <SearchAndResult handleDataList={handleDataList} />
-        {/* <Searchable /> */}
-        {/* <SearchTreeTest /> */}
-        <a href="/#" className="add-new-folder">
-          Add New Folder
-        </a>
+        <SearchAndResult
+          handleDataList={handleDataList}
+          selectedNode={selectedNode}
+        />
+      </div>
+      <div className="action">
+        <Button>CANCEL</Button>
+        <Button type="primary">SAVE</Button>
       </div>
     </div>
   );
