@@ -1,0 +1,44 @@
+.new-node-container {
+  display: flex;
+}
+
+.folder {
+  margin-left: 20px;
+  display: flex;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+}
+
+.icon-delete-filled {
+  font-size: 20px;
+}
+
+.new-node-container .input,
+.new-node-container .select {
+  min-width: 290px;
+}
+
+.new-node-container .action {
+  align-self: end;
+}
+
+.new-node-container .icon-delete-filled,
+.new-node-container .icon-save-filled {
+  font-size: 28px;
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+.new-node-container .icon-save-filled {
+  margin-left: 20px;
+}
+
+.new-node-container .input,
+.new-node-container .select,
+.new-node-container .select-multiple {
+  margin-top: 8px;
+}

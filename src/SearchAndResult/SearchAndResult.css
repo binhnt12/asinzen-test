@@ -1,0 +1,15 @@
+.search-and-result-container {
+  margin-top: 24px;
+  border: 1px solid #bfbfbf;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.site-tree-search-value {
+  color: #f50;
+}
+
+.search-and-result .ant-input {
+  min-width: 400px;
+}
