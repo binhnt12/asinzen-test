@@ -7,7 +7,6 @@ import { TreeData } from "./type";
 
 function App() {
   const [treeData, setTreeData] = useState<TreeData[]>([]);
-  // const [selectedNode, setSelectedNode] = useState<string>("");
   const [isOpen, setOpen] = useState<boolean>(false);
   const [isVisible, setVisible] = useState<boolean>(false);
   const [isVisibleSpec, setVisibleSpec] = useState<boolean>(false);
@@ -24,19 +23,20 @@ function App() {
 
   const handleOpen = (value: boolean) => {
     setOpen(value);
-    setNodeSelect(!value);
   };
 
   const handleOutside = (value: boolean) => {
     setOutside(value);
   };
 
-  const handleClose = (value: boolean) => {
-    setNodeSelect(!value);
+  const handleSetIsNodeSelect = (value: boolean) => {
+    setNodeSelect(value);
   };
+
   const handleVisible = (value: boolean) => {
     setVisible(value);
   };
+
   const handleVisibleSpec = (value: boolean) => {
     setVisibleSpec(value);
   };
@@ -55,12 +55,13 @@ function App() {
           isOpen={isOpen}
           handleOutside={handleOutside}
           isNodeSelectProps={isNodeSelect}
-          handleClose={handleClose}
           handleVisible={handleVisible}
           handleVisibleSpec={handleVisibleSpec}
+          handleSetIsNodeSelect={handleSetIsNodeSelect}
         />
       </div>
-      {!isOpen && isOutside && !isVisible && !isVisibleSpec && (
+      {((isNodeSelect && !isOpen) ||
+        (!isOpen && isOutside && !isVisible && !isVisibleSpec)) && (
         <div className="action">
           <Button>CANCEL</Button>
           <Button type="primary">SAVE</Button>

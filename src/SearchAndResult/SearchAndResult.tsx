@@ -26,9 +26,9 @@ interface Props {
     keyNodeSelect: string | undefined
   ) => void;
   handleOutside: (isOutside: boolean) => void;
-  handleClose: (isClose: boolean) => void;
   handleVisible: (isOpen: boolean) => void;
   handleVisibleSpec: (isOpen: boolean) => void;
+  handleSetIsNodeSelect: (isNodeSelect: boolean) => void;
 }
 
 const dataList: Data[] = [];
@@ -63,7 +63,7 @@ const SearchAndResult: React.FC<Props> = ({
   isOpen,
   handleDataList,
   handleOutside,
-  handleClose,
+  handleSetIsNodeSelect,
   handleVisible,
   handleVisibleSpec,
 }) => {
@@ -258,6 +258,7 @@ const SearchAndResult: React.FC<Props> = ({
 
   const handleNodeClick = (isNodeSelect: boolean) => {
     setNodeSelect(isNodeSelect);
+    handleSetIsNodeSelect(isNodeSelect);
   };
 
   const handleNewNodeDelete = (id: number) => {
