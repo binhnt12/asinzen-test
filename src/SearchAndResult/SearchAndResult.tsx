@@ -1,6 +1,11 @@
 import { Input, Tree } from "antd";
 import { Key } from "rc-tree/lib/interface";
-import { useEffect, useState } from "react";
+import { createRef, useEffect, useState } from "react";
+import { treeData, VisibleMap, VisibleSpecMap } from "../constants";
+import useClickInside from "../hooks/useClickInside";
+import useClickOutside from "../hooks/useClickOutside";
+import NewNode from "../NewNode/NewNode";
+import Node from "../Node/Node";
 import {
   Data,
   DataLoop,
@@ -8,16 +13,22 @@ import {
   VisibleMapType,
   VisibleSpecMapType,
 } from "../type";
-import { treeData, VisibleMap, VisibleSpecMap } from "../constants";
-import NewNode from "../NewNode/NewNode";
-import Node from "../Node/Node";
-import { newData, visibleSpecToValue, visibleToValue } from "../utils";
+import { visibleSpecToValue, visibleToValue } from "../utils";
 import "./SearchAndResult.css";
+
 const { Search } = Input;
 
 interface Props {
-  selectedNode: string;
-  handleDataList: (gData: TreeData[]) => void;
+  isOpen: boolean;
+  isNodeSelectProps: boolean;
+  handleDataList: (
+    gData: TreeData[],
+    keyNodeSelect: string | undefined
+  ) => void;
+  handleOutside: (isOutside: boolean) => void;
+  handleClose: (isClose: boolean) => void;
+  handleVisible: (isOpen: boolean) => void;
+  handleVisibleSpec: (isOpen: boolean) => void;
 }
 
 const dataList: Data[] = [];
@@ -48,28 +59,36 @@ const getParentKey = (key: string, tree: TreeData[]): string | undefined => {
   return parentKey;
 };
 
-const SearchAndResult: React.FC<Props> = ({ selectedNode, handleDataList }) => {
+const SearchAndResult: React.FC<Props> = ({
+  isOpen,
+  handleDataList,
+  handleOutside,
+  handleClose,
+  handleVisible,
+  handleVisibleSpec,
+}) => {
   const [count, setCount] = useState<number>(0);
   const [newNodeArray, setNewNodeArray] = useState<{ id: number }[]>([]);
   const [expandedKeys, setExpandedKeys] = useState<Key[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
   const [autoExpandParent, setAutoExpandParent] = useState<boolean>(true);
   const [_gData, setGData] = useState<TreeData[]>(treeData);
+  const [keyNodeSelect, setKeyNodeSelect] = useState<string | undefined>(
+    undefined
+  );
+  const [isOutside, setOutside] = useState<boolean>(true);
+  const [isVisibleOpen, setVisibleOpen] = useState<boolean>(false);
+  const [isVisibleSpecOpen, setVisibleSpecOpen] = useState<boolean>(false);
+  const [isNodeSelect, setNodeSelect] = useState<boolean>(false);
+
+  const containerRef = createRef<HTMLDivElement>();
 
   useEffect(() => {
-    handleDataList(_gData);
-  }, [handleDataList, _gData]);
+    handleDataList(_gData, keyNodeSelect);
+  }, [handleDataList, _gData, keyNodeSelect]);
 
-  useEffect(() => {
-    const expandedKeys = dataList.map((item: Data) => {
-      if (item.key === selectedNode) {
-        return item.key;
-      }
-      return null;
-    });
-    setExpandedKeys(expandedKeys as Key[]);
-    setAutoExpandParent(true);
-  }, [selectedNode]);
+  useClickOutside(containerRef, () => onOutside(true));
+  useClickInside(containerRef, () => onOutside(false));
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -98,10 +117,10 @@ const SearchAndResult: React.FC<Props> = ({ selectedNode, handleDataList }) => {
       const index = text.indexOf(searchValue);
       const beforeStr = text.substr(0, index);
       const afterStr = text.substr(index + searchValue.length);
-      console.log({ searchValue });
       const title =
         index > -1 ? (
           <Node
+            keyNodeSelect={item.key}
             selected
             text={searchValue}
             beforeStr={beforeStr}
@@ -114,9 +133,12 @@ const SearchAndResult: React.FC<Props> = ({ selectedNode, handleDataList }) => {
                   )
                 : undefined
             }
+            handleNodeSelect={handleNodeSelect}
+            handleNodeClick={handleNodeClick}
           />
         ) : (
           <Node
+            keyNodeSelect={item.key}
             text={text}
             visible={VisibleMap[item.visible as VisibleMapType]}
             visibleSpec={
@@ -126,6 +148,8 @@ const SearchAndResult: React.FC<Props> = ({ selectedNode, handleDataList }) => {
                   )
                 : undefined
             }
+            handleNodeSelect={handleNodeSelect}
+            handleNodeClick={handleNodeClick}
           />
         );
       if (item.children) {
@@ -223,6 +247,19 @@ const SearchAndResult: React.FC<Props> = ({ selectedNode, handleDataList }) => {
     setGData(data);
   };
 
+  const onOutside = (isOutside: boolean) => {
+    setOutside(isOutside);
+    handleOutside(isOutside);
+  };
+
+  const handleNodeSelect = (key: string) => {
+    setKeyNodeSelect(key);
+  };
+
+  const handleNodeClick = (isNodeSelect: boolean) => {
+    setNodeSelect(isNodeSelect);
+  };
+
   const handleNewNodeDelete = (id: number) => {
     const temp = newNodeArray.filter((item) => item.id !== id);
     setNewNodeArray(temp);
@@ -235,13 +272,11 @@ const SearchAndResult: React.FC<Props> = ({ selectedNode, handleDataList }) => {
     id: number
   ) => {
     const data = [..._gData];
-    newData({
-      key: selectedNode,
+    data.unshift({
+      key: Date.now().toString(),
       title: value,
       visible: selectValue,
       visibleSpec: selectSpecValue,
-      childKey: dataList.length.toString(),
-      data,
     });
     setGData(data);
     generateList(data);
@@ -260,10 +295,24 @@ const SearchAndResult: React.FC<Props> = ({ selectedNode, handleDataList }) => {
     setCount(count + 1);
   };
 
-  if (!selectedNode) return null;
+  const handleVisibleOpen = (isOpen: boolean) => {
+    setVisibleOpen(isOpen);
+    handleVisible(isOpen);
+  };
+
+  const handleVisibleSpecOpen = (isOpen: boolean) => {
+    setVisibleSpecOpen(isOpen);
+    handleVisibleSpec(isOpen);
+  };
+
+  if (
+    (isNodeSelect && !isOpen) ||
+    (!isOpen && isOutside && !isVisibleOpen && !isVisibleSpecOpen)
+  )
+    return null;
 
   return (
-    <div className="search-and-result-container">
+    <div ref={containerRef} className="search-and-result-container">
       <div className="search-and-result">
         <Search
           style={{ marginBottom: 8 }}
@@ -277,6 +326,8 @@ const SearchAndResult: React.FC<Props> = ({ selectedNode, handleDataList }) => {
             handleSave={handleSave}
             handleDelete={handleDelete}
             id={item.id}
+            handleVisibleOpen={handleVisibleOpen}
+            handleVisibleSpecOpen={handleVisibleSpecOpen}
           />
         ))}
         <Tree

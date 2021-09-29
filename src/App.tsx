@@ -1,37 +1,71 @@
-import TreeSelect from "./TreeSelect/TreeSelect";
-import SearchAndResult from "./SearchAndResult/SearchAndResult";
-
-import "./App.css";
-import { TreeData } from "./type";
-import { useState } from "react";
 import { Button } from "antd";
+import { useState } from "react";
+import "./App.css";
+import SearchAndResult from "./SearchAndResult/SearchAndResult";
+import TreeSelect from "./TreeSelect/TreeSelect";
+import { TreeData } from "./type";
 
 function App() {
   const [treeData, setTreeData] = useState<TreeData[]>([]);
-  const [selectedNode, setSelectedNode] = useState<string>("");
+  // const [selectedNode, setSelectedNode] = useState<string>("");
+  const [isOpen, setOpen] = useState<boolean>(false);
+  const [isVisible, setVisible] = useState<boolean>(false);
+  const [isVisibleSpec, setVisibleSpec] = useState<boolean>(false);
+  const [isOutside, setOutside] = useState<boolean>(true);
+  const [isNodeSelect, setNodeSelect] = useState<boolean>(false);
+  const [keyNodeSelect, setKeyNodeSelect] = useState<string | undefined>(
+    undefined
+  );
 
-  const handleDataList = (value: TreeData[]) => {
+  const handleDataList = (value: TreeData[], key: string | undefined): void => {
     setTreeData(value);
+    setKeyNodeSelect(key);
   };
 
-  const handleNodeSelect = (value: string) => {
-    setSelectedNode(value);
+  const handleOpen = (value: boolean) => {
+    setOpen(value);
+    setNodeSelect(!value);
+  };
+
+  const handleOutside = (value: boolean) => {
+    setOutside(value);
+  };
+
+  const handleClose = (value: boolean) => {
+    setNodeSelect(!value);
+  };
+  const handleVisible = (value: boolean) => {
+    setVisible(value);
+  };
+  const handleVisibleSpec = (value: boolean) => {
+    setVisibleSpec(value);
   };
 
   return (
     <div className="App">
       <h1>Copy Data to Folder</h1>
-      <TreeSelect treeData={treeData} handleNodeSelect={handleNodeSelect} />
+      <TreeSelect
+        treeData={treeData}
+        keyNodeSelect={keyNodeSelect}
+        handleOpen={handleOpen}
+      />
       <div className="container">
         <SearchAndResult
           handleDataList={handleDataList}
-          selectedNode={selectedNode}
+          isOpen={isOpen}
+          handleOutside={handleOutside}
+          isNodeSelectProps={isNodeSelect}
+          handleClose={handleClose}
+          handleVisible={handleVisible}
+          handleVisibleSpec={handleVisibleSpec}
         />
       </div>
-      <div className="action">
-        <Button>CANCEL</Button>
-        <Button type="primary">SAVE</Button>
-      </div>
+      {!isOpen && isOutside && !isVisible && !isVisibleSpec && (
+        <div className="action">
+          <Button>CANCEL</Button>
+          <Button type="primary">SAVE</Button>
+        </div>
+      )}
     </div>
   );
 }

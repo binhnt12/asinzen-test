@@ -13,6 +13,7 @@ import "./NewNode.css";
 const { Option } = Select;
 
 interface Props {
+  id: number;
   handleSave: (
     value: string,
     selectValue: VisibleMapType,
@@ -20,10 +21,17 @@ interface Props {
     id: number
   ) => void;
   handleDelete: (id: number) => void;
-  id: number;
+  handleVisibleOpen: (isOpen: boolean) => void;
+  handleVisibleSpecOpen: (isOpen: boolean) => void;
 }
 
-const NewNode: React.FC<Props> = ({ handleSave, handleDelete, id }) => {
+const NewNode: React.FC<Props> = ({
+  id,
+  handleSave,
+  handleDelete,
+  handleVisibleOpen,
+  handleVisibleSpecOpen,
+}) => {
   const [value, setValue] = useState<string>("");
   const [selectValue, setSelectValue] = useState<VisibleMapType>(
     "visible-to-everyone"
@@ -51,6 +59,22 @@ const NewNode: React.FC<Props> = ({ handleSave, handleDelete, id }) => {
     handleDelete(id);
   };
 
+  const onVisibleFocus = () => {
+    handleVisibleOpen(true);
+  };
+
+  const onVisibleBlur = () => {
+    handleVisibleOpen(false);
+  };
+
+  const onVisibleSpecFocus = () => {
+    handleVisibleSpecOpen(true);
+  };
+
+  const onVisibleSpecBlur = () => {
+    handleVisibleSpecOpen(false);
+  };
+
   return (
     <div className="new-node-container">
       <div className="icon-caret-right">
@@ -69,9 +93,13 @@ const NewNode: React.FC<Props> = ({ handleSave, handleDelete, id }) => {
             className="select"
             defaultValue="visible-to-everyone"
             onChange={onSelectChange}
+            onFocus={onVisibleFocus}
+            onBlur={onVisibleBlur}
           >
             {Object.keys(VisibleMap).map((item) => (
-              <Option value={item}>{VisibleMap[item as VisibleMapType]}</Option>
+              <Option key={item} value={item}>
+                {VisibleMap[item as VisibleMapType]}
+              </Option>
             ))}
           </Select>
           <Select
@@ -81,10 +109,17 @@ const NewNode: React.FC<Props> = ({ handleSave, handleDelete, id }) => {
             style={{ width: "100%" }}
             placeholder="Please select"
             onChange={onSelectSpecChange}
+            value={
+              selectValue === "visible-to-specific-users"
+                ? selectSpecValue
+                : undefined
+            }
             disabled={selectValue !== "visible-to-specific-users"}
+            onFocus={onVisibleSpecFocus}
+            onBlur={onVisibleSpecBlur}
           >
             {Object.keys(VisibleSpecMap).map((item) => (
-              <Option value={item}>
+              <Option key={item} value={item}>
                 {VisibleSpecMap[item as VisibleSpecMapType]}
               </Option>
             ))}

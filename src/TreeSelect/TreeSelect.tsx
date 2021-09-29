@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TreeSelect as TreeSelectAntd } from "antd";
 import { TreeData } from "../type";
+import "./TreeSelect.css";
 
 const { TreeNode } = TreeSelectAntd;
 
 interface Props {
   treeData: TreeData[];
-  handleNodeSelect: (value: string) => void;
+  keyNodeSelect: string | undefined;
+  handleOpen: (isOpen: boolean) => void;
 }
 
 function renderTree(data: TreeData[]): React.ReactNode {
@@ -19,26 +21,35 @@ function renderTree(data: TreeData[]): React.ReactNode {
   });
 }
 
-const TreeSelect: React.FC<Props> = ({ treeData, handleNodeSelect }) => {
+const TreeSelect: React.FC<Props> = ({
+  treeData,
+  keyNodeSelect,
+  handleOpen,
+}) => {
+  useEffect(() => {
+    setValue(keyNodeSelect);
+  }, [keyNodeSelect]);
+
   const [value, setValue] = useState<string | undefined>(undefined);
-  const onChange = (value: string) => {
-    setValue(value);
-    handleNodeSelect(value);
+
+  const onDropdownVisibleChange = (isOpen: boolean) => {
+    handleOpen(isOpen);
   };
 
   return (
-    <TreeSelectAntd
-      showSearch
-      style={{ width: "100%" }}
-      value={value}
-      dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
-      placeholder="Please select"
-      allowClear
-      treeDefaultExpandAll
-      onChange={onChange}
-    >
-      {renderTree(treeData)}
-    </TreeSelectAntd>
+    <div>
+      <TreeSelectAntd
+        style={{ width: "100%" }}
+        value={value}
+        dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+        placeholder="Please select"
+        allowClear
+        treeDefaultExpandAll
+        onDropdownVisibleChange={onDropdownVisibleChange}
+      >
+        {renderTree(treeData)}
+      </TreeSelectAntd>
+    </div>
   );
 };
 
